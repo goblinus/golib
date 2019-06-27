@@ -7,11 +7,15 @@ type ItemLinker interface {
 	Remove()
 }
 
+func CreateItem(value interface{}, prev, next *Item) *Item {
+	return &Item{value, prev, next}
+}
+
 //Базовая структуру элемента двусвязанного списка
 type Item struct {
 	value interface{}
-	prev *Item
-	next *Item
+	prev  *Item
+	next  *Item
 }
 
 //Реализация интерфейса ItemLinker
