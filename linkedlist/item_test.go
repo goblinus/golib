@@ -1,75 +1,71 @@
 package linkedlist
 
 import (
-	"fmt"
+	"math/rand"
 	"testing"
+	"time"
 )
 
 const UpperLimit = 5
 const FirstIteration = 0
-const CheckedQuantity = 6
 
 func TestItem(t *testing.T) {
 
 	//Создаем набор связанных элементов в цикле
 	var currentElement *Item
 	var firstElement *Item
-	var lastElement *Item
-
-	storage := make([]*Item, 10)
 
 	var counter int
-	for counter = 0; counter < 4; counter++ {
+	var storage []int
+
+	random := rand.New(rand.NewSource(time.Now().UnixNano()))
+	for counter = 0; counter < UpperLimit; counter++ {
 
 		if currentElement == nil {
+			value := random.Intn(10000)
 			currentElement = CreateItem(
-				struct{ Data int }{counter},
+				struct{ Data int }{value},
 				nil,
 				nil)
 			firstElement = currentElement
+			storage = append(storage, value)
 		}
 
+		value := random.Intn(10000)
 		currentElement.next = CreateItem(
-			struct{ Data int }{counter + 1},
+			struct{ Data int }{value},
 			currentElement,
 			nil)
 
-		storage[counter] = currentElement
-		currentElement = currentElement.next
+		storage = append(storage, value)
+		currentElement = currentElement.Next()
 	}
 
-	//Обрабатываем последнюю итерацию
-	counter++
-	storage[counter] = currentElement
-	fmt.Printf("ddd: %v\n", storage[counter])
-	lastElement = storage[counter+1]
-
-	fmt.Printf("Первый элемент последовательности: %p: %v\n", firstElement, firstElement)
-	fmt.Printf("Последний элемент последовательности: %p: %v\n", lastElement, lastElement)
-	fmt.Printf("Длина контрольного массива: %d\n", counter)
-	for i := 0; i < CheckedQuantity; i++ {
-		fmt.Printf("%p: %v\n", storage[i], storage[i])
+	//1) Проверяем наличие входной точки последовательности для последующего перебора
+	if firstElement == nil {
+		t.Errorf("Пустая последовательность: нет первого элемента контрольной последовательности")
 	}
-	//1) Тестируем корректность создания первого и последнего элемента последовательности
-	// if firstElement == nil {
-	// 	t.Errorf("Не создан первый элемент последовательности")
-	// }
 
-	// if lastElement == nil {
-	// 	t.Errorf("Не создан последний элемент последовательности")
-	// }
+	counter = 0
+	checkQnty := len(storage)
+	currentElement = firstElement
 
-	// if firstElement.Prev() != nil {
-	// 	t.Errorf("Ошибка при создании первого элемента последовательности: не должен иметь ссылки на предыдущий элемент")
-	// }
+	//2) Сравниваем значения элементов последовательности с соответствующими контрольными значениями (массив storage)
+	for currentElement != nil {
+		itemValue := currentElement.Value().(struct{ Data int }).Data
+		if itemValue != storage[counter] {
+			t.Errorf(
+				"Текущее значение элемента не соответствует контрольному значению: %d : %d\n",
+				itemValue,
+				storage[counter])
+		}
 
-	// if lastElement.Next() != nil {
-	// 	t.Errorf("Ошибка при создании последнего элемента последовательности: не должен иметь ссылки на следующий элемент")
-	// }
+		counter++
+		currentElement = currentElement.Next()
+	}
 
-	//2) Проверяем остальные члены созданной последовательности
-	// fmt.Printf("%v\n", storage)
-
-	// fmt.Printf("%v: %v\n", storage[FirstIteration].Next(), firstElement.Next())
-	// fmt.Printf("%v: %v\n", storage[UpperLimit], lastElement)
+	//3) Проверяем общее кол-во элементов последовательности с кол-вом контрольных элементов
+	if counter != checkQnty {
+		t.Errorf("Кол-во элементов контрольной последовательности не соответствует кол-ву элементов тестируемого списка")
+	}
 }

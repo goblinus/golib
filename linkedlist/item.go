@@ -1,12 +1,5 @@
 package linkedlist
 
-type ItemLinker interface {
-	Value() interface{}
-	Prev() *Item
-	Next() *Item
-	Remove()
-}
-
 func CreateItem(value interface{}, prev, next *Item) *Item {
 	return &Item{value, prev, next}
 }
