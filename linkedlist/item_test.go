@@ -68,4 +68,17 @@ func TestItem(t *testing.T) {
 	if counter != checkQnty {
 		t.Errorf("Кол-во элементов контрольной последовательности не соответствует кол-ву элементов тестируемого списка")
 	}
+
+	//4) Тестируем удаление элемента последовательности
+	deletedElement := firstElement.Next()
+	deletedElement.Remove()
+	currentElement = firstElement
+	for currentElement != nil {
+		currentElement = currentElement.Next()
+	}
+
+	shouldBeValue := storage[2]
+	if (firstElement.Next().Value().(struct{ Data int })).Data != shouldBeValue {
+		t.Errorf("Ошибка при удалении второго элемента контрольной последовательности")
+	}
 }

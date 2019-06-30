@@ -26,5 +26,12 @@ func (i *Item) Next() *Item {
 }
 
 func (i *Item) Remove() {
-
+	if i.Prev() != nil && i.Next() != nil {
+		i.prev.next = i.next
+		i.next.prev = i.prev
+	} else if i.Prev() == nil {
+		i.next.prev = nil
+	} else if i.Next() == nil {
+		i.prev.next = nil
+	}
 }
