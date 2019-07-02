@@ -3,40 +3,48 @@ package eventlogger
 import (
 	"bytes"
 	"fmt"
-	"os"
+	"bytes"
+	"time"
 	"testing"
 )
 
+const EventId = 1111
+const GradeValue = 5
+const EqualValue = 0
+
 func TestEvent(t *testing.T) {
-	var submitterStorage []*HwSubmitter
-	var acceptedStorage []*HwAccepted
 
-	submitterStorage = append(submitterStorage, createTestSubmitter("Some code of 1", "Comment of 1", 1111))
-	submitterStorage = append(submitterStorage, createTestSubmitter("Some code of 2", "Comment of 2", 2222))
-	submitterStorage = append(submitterStorage, createTestSubmitter("Some code of 3", "Comment of 3", 3333))
-	for _, event := range submitterStorage {
-		LogOtusEvent(event, os.Stdout)
+	//Тестируем логирование события HwSubmitter
+	checkedMessage := fmt.Sprintf(
+		"%s submitted %d \"Comment for code\"\n",
+		time.Now().Format("2006-01-02"),
+		EventId)
+
+	buffer = &bytes.Buffer{}
+	submitterEvent := CreateHwSubmitterEvent(
+		"Some code", 
+		"Comment for code")
+	submitterEvent.Id = EventId
+	LogOtusEvent(submitterEvent, buffer)
+
+	if EqualValue != strings.Compare(buffer.String(), checkedMessage) {
+		t.Errorf("Контрольное сообщение и сообщение логгера для события HwSubmitter не совпадают")
 	}
 
-	buffer := bytes.Buffer{}
-	acceptedStorage = append(acceptedStorage, createTestAccepted(4, 1111))
-	acceptedStorage = append(acceptedStorage, createTestAccepted(5, 2222))
-	for _, event := range acceptedStorage {
-		LogOtusEvent(event, &buffer)
+	//Тестируем логирование события HwAccepted
+	checkedMessage = fmt.Sprintf(
+		"%s accepted %d %d\n",
+		time.Now().Format("2006-01-02"),
+		EventId,
+		GradeValue)
+
+	buffer = &bytes.Buffer{}
+	acceptedEvent := CreateHwAcceptedEvent(GradeValue)
+	acceptedEvent.Id = EventId
+	LogOtusEvent(acceptedEvent, buffer)
+
+	if EqualValue != strings.Compare(buffer.String(), checkedMessage) {
+		t.Errorf("Контрольное сообщение и сообщение логгера для события HwAccepted не совпадают")
 	}
-	fmt.Printf("%v\n", buffer.String())
-}
 
-func createTestSubmitter(code, comment string, id int) *HwSubmitter {
-	result := CreateHwSubmitterEvent(code, comment)
-	result.Id = id
-
-	return result
-}
-
-func createTestAccepted(grade, id int) *HwAccepted {
-	result := CreateHwAcceptedEvent(grade)
-	result.Id = id
-
-	return result
 }
