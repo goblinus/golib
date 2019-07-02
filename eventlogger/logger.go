@@ -1,10 +1,10 @@
 package eventlogger
 
 import (
-	"io"
 	"fmt"
+	"io"
 )
 
 func LogOtusEvent(event OtusEvent, w io.Writer) {
-	fmt.Fprintf(w, event.LogMessage())
+	fmt.Fprintln(w, event.LogMessage())
 }
