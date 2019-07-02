@@ -34,7 +34,7 @@ func CreateHwAcceptedEvent(grade int) *HwAccepted {
 func CreateHwSubmitterEvent(code, comment string) *HwSubmitter {
 	return &HwSubmitter{
 		Event{
-			Name:     "commiter",
+			Name:     "submitter",
 			DateTime: time.Now()},
 		code,
 		comment}
